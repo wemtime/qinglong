@@ -80,8 +80,7 @@ jobs:
             QL_BRANCH=${{ github.ref_name }}
             SOURCE_COMMIT=${{ github.sha }}
           network: host
-          platforms: linux/arm/v6
-          # platforms: linux/arm/v6,linux/arm/v7
+          platforms: linux/arm/v6,linux/arm/v7
           context: .
           file: ./docker/Dockerfile
           push: true
