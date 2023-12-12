@@ -40,3 +40,5 @@ jobs:
             --tag sqlite-builder \
             --no-cache \
             .
+          CONTAINER_ID=$(docker create -it sqlite-builder)
+          docker exec -it $CONTAINER_ID node -p "process.arch"
