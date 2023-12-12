@@ -34,10 +34,9 @@ jobs:
 
       - name: Build binaries and test
         run: |
-          docker buildx build \
+          docker build \
             --file ./docker/Dockerfile \
             --load \
             --tag sqlite-builder \
-            --platform ${{ matrix.target }} \
             --no-cache \
             .
