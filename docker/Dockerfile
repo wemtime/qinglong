@@ -1,6 +1,14 @@
 FROM python:3.11-alpine as builder
-RUN set -x \
-  && apk update \
-  && apk add nodejs npm git \
-  && node -v \
-  && npm -v
+
+RUN apk add --no-cache file nodejs npm
+
+# Check the path to the node executable
+RUN which node
+
+RUN file $(which node)
+
+RUN ldd $(which node)
+
+RUN node -v
+
+RUN NODE_DEBUG=* node $(which npm) -v
