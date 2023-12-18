@@ -1,6 +1,6 @@
 FROM python:3.11-alpine as builder
 
-RUN sed -i 's/v3.19\/main/v3.18\/main/g' /etc/apk/repositories
+RUN sed -i 's/v3.19/edge/g' /etc/apk/repositories
 RUN apk add --no-cache file nodejs npm
 
 RUN which node
