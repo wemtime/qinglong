@@ -6,8 +6,6 @@ RUN which node
 
 RUN file $(which node)
 
-RUN ldd $(which node)
-
 RUN node -v
 
-RUN NODE_DEBUG=* timeout 1m node $(which npm) -v
+RUN timeout 10s npm -v
