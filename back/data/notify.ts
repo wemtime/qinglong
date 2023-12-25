@@ -66,7 +66,7 @@ export class TelegramBotNotification extends NotificationBaseInfo {
   public telegramBotProxyHost = '';
   public telegramBotProxyPort = '';
   public telegramBotProxyAuth = '';
-  public telegramBotApiHost = 'api.telegram.org';
+  public telegramBotApiHost = 'https://api.telegram.org';
 }
 
 export class DingtalkBotNotification extends NotificationBaseInfo {
@@ -112,7 +112,7 @@ export class PushMeNotification extends NotificationBaseInfo {
 export class ChronocatNotification extends NotificationBaseInfo {
   public chronocatURL: string = '';
   public chronocatQQ: string = '';
-  public chronocatToekn: string = '';
+  public chronocatToken: string = '';
 }
 
 export class WebhookNotification extends NotificationBaseInfo {

@@ -5,10 +5,10 @@ import config from '../config';
 import {
   AuthDataType,
   AuthInfo,
-  AuthInstance,
-  AuthModel,
-  AuthModelInfo,
-} from '../data/auth';
+  SystemInstance,
+  SystemModel,
+  SystemModelInfo,
+} from '../data/system';
 import { NotificationInfo } from '../data/notify';
 import NotificationService from './notify';
 import ScheduleService, { TaskCallbacks } from './schedule';
@@ -39,21 +39,21 @@ export default class SystemService {
     @Inject('logger') private logger: winston.Logger,
     private scheduleService: ScheduleService,
     private sockService: SockService,
-  ) { }
+  ) {}
 
   public async getSystemConfig() {
     const doc = await this.getDb({ type: AuthDataType.systemConfig });
-    return doc || ({} as AuthInstance);
+    return doc || ({} as SystemInstance);
   }
 
-  private async updateAuthDb(payload: AuthInfo): Promise<AuthInstance> {
-    await AuthModel.upsert({ ...payload });
+  private async updateAuthDb(payload: AuthInfo): Promise<SystemInstance> {
+    await SystemModel.upsert({ ...payload });
     const doc = await this.getDb({ type: payload.type });
     return doc;
   }
 
-  public async getDb(query: any): Promise<AuthInstance> {
-    const doc: any = await AuthModel.findOne({ where: { ...query } });
+  public async getDb(query: any): Promise<SystemInstance> {
+    const doc: any = await SystemModel.findOne({ where: { ...query } });
     return doc && doc.get({ plain: true });
   }
 
@@ -75,30 +75,146 @@ export default class SystemService {
     }
   }
 
-  public async updateSystemConfig(info: AuthModelInfo) {
+  public async updateLogRemoveFrequency(info: SystemModelInfo) {
     const oDoc = await this.getSystemConfig();
     const result = await this.updateAuthDb({
       ...oDoc,
-      type: AuthDataType.systemConfig,
-      info,
+      info: { ...oDoc.info, ...info },
     });
-    if (info.logRemoveFrequency) {
-      const cron = {
-        id: result.id || NaN,
-        name: '删除日志',
-        command: `ql rmlog ${info.logRemoveFrequency}`,
-      };
+    const cron = {
+      id: result.id || NaN,
+      name: '删除日志',
+      command: `ql rmlog ${info.logRemoveFrequency}`,
+    };
+    if (oDoc.info?.logRemoveFrequency) {
       await this.scheduleService.cancelIntervalTask(cron);
-      if (info.logRemoveFrequency > 0) {
-        this.scheduleService.createIntervalTask(cron, {
-          days: info.logRemoveFrequency,
-        });
-      }
     }
+    if (info.logRemoveFrequency && info.logRemoveFrequency > 0) {
+      this.scheduleService.createIntervalTask(cron, {
+        days: info.logRemoveFrequency,
+      });
+    }
+    return { code: 200, data: info };
+  }
+
+  public async updateCronConcurrency(info: SystemModelInfo) {
+    const oDoc = await this.getSystemConfig();
+    await this.updateAuthDb({
+      ...oDoc,
+      info: { ...oDoc.info, ...info },
+    });
     if (info.cronConcurrency) {
       await taskLimit.setCustomLimit(info.cronConcurrency);
     }
     return { code: 200, data: info };
+  }
+
+  public async updateDependenceProxy(info: SystemModelInfo) {
+    const oDoc = await this.getSystemConfig();
+    await this.updateAuthDb({
+      ...oDoc,
+      info: { ...oDoc.info, ...info },
+    });
+    if (info.dependenceProxy) {
+      await fs.promises.writeFile(
+        config.dependenceProxyFile,
+        `export http_proxy="${info.dependenceProxy}"\nexport https_proxy="${info.dependenceProxy}"`,
+      );
+    } else {
+      await fs.promises.rm(config.dependenceProxyFile);
+    }
+    return { code: 200, data: info };
+  }
+
+  public async updateNodeMirror(info: SystemModelInfo, res: Response) {
+    const oDoc = await this.getSystemConfig();
+    await this.updateAuthDb({
+      ...oDoc,
+      info: { ...oDoc.info, ...info },
+    });
+    let cmd = 'pnpm config delete registry';
+    if (info.nodeMirror) {
+      cmd = `pnpm config set registry ${info.nodeMirror}`;
+    }
+    const command = `cd && ${cmd} && pnpm i -g`;
+    this.scheduleService.runTask(
+      command,
+      {
+        onStart: async (cp) => {
+          res.setHeader('QL-Task-Pid', `${cp.pid}`);
+          res.end();
+        },
+        onEnd: async () => {
+          this.sockService.sendMessage({
+            type: 'updateNodeMirror',
+            message: 'update node mirror end',
+          });
+        },
+        onError: async (message: string) => {
+          this.sockService.sendMessage({ type: 'updateNodeMirror', message });
+        },
+        onLog: async (message: string) => {
+          this.sockService.sendMessage({ type: 'updateNodeMirror', message });
+        },
+      },
+      {
+        command,
+      },
+    );
+  }
+
+  public async updatePythonMirror(info: SystemModelInfo) {
+    const oDoc = await this.getSystemConfig();
+    await this.updateAuthDb({
+      ...oDoc,
+      info: { ...oDoc.info, ...info },
+    });
+    let cmd = 'pip config unset global.index-url';
+    if (info.pythonMirror) {
+      cmd = `pip3 config set global.index-url ${info.pythonMirror}`;
+    }
+    await promiseExec(cmd);
+    return { code: 200, data: info };
+  }
+
+  public async updateLinuxMirror(info: SystemModelInfo, res: Response) {
+    const oDoc = await this.getSystemConfig();
+    await this.updateAuthDb({
+      ...oDoc,
+      info: { ...oDoc.info, ...info },
+    });
+    let targetDomain = 'dl-cdn.alpinelinux.org';
+    if (info.linuxMirror) {
+      targetDomain = info.linuxMirror;
+    }
+    const command = `sed -i 's/${
+      oDoc.info?.linuxMirror || 'dl-cdn.alpinelinux.org'
+    }/${targetDomain}/g' /etc/apk/repositories && apk update -f`;
+
+    this.scheduleService.runTask(
+      command,
+      {
+        onStart: async (cp) => {
+          res.setHeader('QL-Task-Pid', `${cp.pid}`);
+          res.end();
+        },
+        onEnd: async () => {
+          this.sockService.sendMessage({
+            type: 'updateLinuxMirror',
+            message: 'update linux mirror end',
+          });
+        },
+        onError: async (message: string) => {
+          this.sockService.sendMessage({ type: 'updateLinuxMirror', message });
+        },
+        onLog: async (message: string) => {
+          this.sockService.sendMessage({ type: 'updateLinuxMirror', message });
+        },
+      },
+      {
+        command,
+      },
+    );
   }
 
   public async checkUpdate() {
@@ -114,7 +230,7 @@ export default class SystemService {
           },
         );
         lastVersionContent = await parseContentVersion(result.body);
-      } catch (error) { }
+      } catch (error) {}
 
       if (!lastVersionContent) {
         lastVersionContent = currentVersionContent;
@@ -160,7 +276,7 @@ export default class SystemService {
   }
 
   public async updateSystem() {
-    const cp = spawn('ql -l update false', { shell: '/bin/bash' });
+    const cp = spawn('no_tee=true ql update false', { shell: '/bin/bash' });
 
     cp.stdout.on('data', (data) => {
       this.sockService.sendMessage({
@@ -187,7 +303,8 @@ export default class SystemService {
   }
 
   public async reloadSystem(target: 'system' | 'data') {
-    const cp = spawn(`ql -l reload ${target || ''}`, { shell: '/bin/bash' });
+    const cmd = `no_tee=true ql reload ${target || ''}`;
+    const cp = spawn(cmd, { shell: '/bin/bash' });
 
     cp.stdout.on('data', (data) => {
       this.sockService.sendMessage({
@@ -234,7 +351,7 @@ export default class SystemService {
       callback,
       {
         command,
-      }
+      },
     );
   }
 
@@ -283,7 +400,7 @@ export default class SystemService {
   }
 
   public async getSystemLog(res: Response) {
-    const result = readDirs(config.systemLogPath, config.systemLogPath);
+    const result = await readDirs(config.systemLogPath, config.systemLogPath);
     const logs = result.reverse().filter((x) => x.title.endsWith('.log'));
     res.set({
       'Content-Length': sum(logs.map((x) => x.size)),

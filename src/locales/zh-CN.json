@@ -141,7 +141,7 @@
   "服务启动超时": "服务启动超时",
   "请先按如下方式修复：": "请先按如下方式修复：",
   "1. 宿主机执行 docker run --rm -v\n                  /var/run/docker.sock:/var/run/docker.sock\n                  containrrr/watchtower -cR <容器名>": "1. 宿主机执行 docker run --rm -v\n                  /var/run/docker.sock:/var/run/docker.sock\n                  containrrr/watchtower -cR <容器名>",
-  "2. 容器内执行 ql -l check、ql -l update": "2. 容器内执行 ql -l check、ql -l update",
+  "2. 容器内执行 ql check、ql update": "2. 容器内执行 ql check、ql update",
   "3. 如果无法解决，容器内执行 pm2 logs，拷贝执行结果": "3. 如果无法解决，容器内执行 pm2 logs，拷贝执行结果",
   "提交 issue": "提交 issue",
   "启动中，请稍后...": "启动中，请稍后...",
@@ -375,7 +375,7 @@
   "微信扫码登录后一对一推送或一对多推送下面的token(您的Token)，不提供PUSH_PLUS_USER则默认为一对一推送，参考 https://www.pushplus.plus/": "微信扫码登录后一对一推送或一对多推送下面的token(您的Token)，不提供PUSH_PLUS_USER则默认为一对一推送，参考 https://www.pushplus.plus/",
   "一对多推送的“群组编码”（一对多推送下面->您的群组(如无则创建)->群组编码，如果您是创建群组人。也需点击“查看二维码”扫描绑定，否则不能接受群组消息推送）": "一对多推送的“群组编码”（一对多推送下面->您的群组(如无则创建)->群组编码，如果您是创建群组人。也需点击“查看二维码”扫描绑定，否则不能接受群组消息推送）",
   "飞书群组机器人：https://www.feishu.cn/hc/zh-CN/articles/360024984973": "飞书群组机器人：https://www.feishu.cn/hc/zh-CN/articles/360024984973",
-  "邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://nodemailer.com/smtp/well-known/": "邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://nodemailer.com/smtp/well-known/",
+  "邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://github.com/nodemailer/nodemailer/blob/master/lib/well-known/services.json": "邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://github.com/nodemailer/nodemailer/blob/master/lib/well-known/services.json",
   "邮箱地址": "邮箱地址",
   "邮箱SMTP授权码": "邮箱SMTP授权码",
   "PushMe的Key，https://push.i-i.me/": "PushMe的Key，https://push.i-i.me/",
@@ -466,5 +466,14 @@
   "个人:user_id=个人QQ 群则填入group_id=QQ群 多个用英文;隔开同时支持个人和群 如：user_id=xxx;group_id=xxxx;group_id=xxxxx": "个人:user_id=个人QQ 群则填入group_id=QQ群 多个用英文;隔开同时支持个人和群 如：user_id=xxx;group_id=xxxx;group_id=xxxxx",
   "docker安装在持久化config目录下的chronocat.yml文件可找到": "docker安装在持久化config目录下的chronocat.yml文件可找到",
   "请选择": "请选择",
-  "请输入": "请输入"
+  "请输入": "请输入",
+  "依赖设置": "依赖设置",
+  "Node 软件包镜像源": "Node 软件包镜像源",
+  "Python 软件包镜像源": "Python 软件包镜像源",
+  "Linux 软件包镜像源": "Linux 软件包镜像源",
+  "代理与镜像源二选一即可": "代理与镜像源二选一即可",
+  "代理地址, 支持HTTP(S)/SOCK5": "代理地址, 支持HTTP(S)/SOCK5",
+  "NPM 镜像源": "NPM 镜像源",
+  "PyPI 镜像源": "PyPI 镜像源",
+  "alpine linux 镜像源, 例如 mirrors.aliyun.com": "alpine linux 镜像源, 例如 mirrors.aliyun.com"
 }

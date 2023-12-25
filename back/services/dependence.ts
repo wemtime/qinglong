@@ -14,7 +14,7 @@ import {
 import { spawn } from 'cross-spawn';
 import SockService from './sock';
 import { FindOptions, Op } from 'sequelize';
-import { promiseExecSuccess } from '../config/util';
+import { fileExist, promiseExecSuccess } from '../config/util';
 import dayjs from 'dayjs';
 import taskLimit from '../shared/pLimit';
 
@@ -61,12 +61,23 @@ export default class DependenceService {
   }
 
   public async remove(ids: number[], force = false): Promise<Dependence[]> {
-    await DependenceModel.update(
-      { status: DependenceStatus.queued, log: [] },
-      { where: { id: ids } },
-    );
     const docs = await DependenceModel.findAll({ where: { id: ids } });
-    this.installDependenceOneByOne(docs, false, force);
+    const unInstalledDeps = docs.filter(
+      (x) => x.status !== DependenceStatus.installed,
+    );
+    const installedDeps = docs.filter(
+      (x) => x.status === DependenceStatus.installed,
+    );
+    await this.removeDb(unInstalledDeps.map((x) => x.id!));
+
+    if (installedDeps.length) {
+      await DependenceModel.update(
+        { status: DependenceStatus.queued, log: [] },
+        { where: { id: ids } },
+      );
+
+      this.installDependenceOneByOne(docs, false, force);
+    }
     return docs;
   }
 
@@ -119,7 +130,7 @@ export default class DependenceService {
     );
 
     const docs = await DependenceModel.findAll({ where: { id: ids } });
-    this.installDependenceOneByOne(docs);
+    this.installDependenceOneByOne(docs, true, true);
     return docs;
   }
 
@@ -188,7 +199,7 @@ export default class DependenceService {
         this.updateLog(depIds, message);
 
         // 判断是否已经安装过依赖
-        if (isInstall) {
+        if (isInstall && !force) {
           const getCommandPrefix = GetDependenceCommandTypes[dependency.type];
           const depVersionStr = versionDependenceCommandTypes[dependency.type];
           let depVersion = '';
@@ -241,10 +252,18 @@ export default class DependenceService {
             return resolve(null);
           }
         }
-
-        const cp = spawn(`${depRunCommand} ${dependency.name.trim()}`, {
-          shell: '/bin/bash',
-        });
+        const dependenceProxyFileExist = await fileExist(
+          config.dependenceProxyFile,
+        );
+        const proxyStr = dependenceProxyFileExist
+          ? `source ${config.dependenceProxyFile} &&`
+          : '';
+        const cp = spawn(
+          `${proxyStr} ${depRunCommand} ${dependency.name.trim()}`,
+          {
+            shell: '/bin/bash',
+          },
+        );
 
         cp.stdout.on('data', async (data) => {
           this.sockService.sendMessage({

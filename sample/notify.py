@@ -79,7 +79,7 @@ push_config = {
     'QMSG_TYPE': '',                    # qmsg 酱的 QMSG_TYPE
 
     'QYWX_ORIGIN': '',                  # 企业微信代理地址
-    
+
     'QYWX_AM': '',                      # 企业微信应用
 
     'QYWX_KEY': '',                     # 企业微信机器人
@@ -102,11 +102,11 @@ push_config = {
     'SMTP_NAME': '',                    # SMTP 收发件人姓名，可随意填写
 
     'PUSHME_KEY': '',                   # PushMe 酱的 PUSHME_KEY
-    
+
     'CHRONOCAT_QQ': '',                 # qq号
     'CHRONOCAT_TOKEN': '',              # CHRONOCAT 的token
     'CHRONOCAT_URL': '',                # CHRONOCAT的url地址
-    
+
     'WEBHOOK_URL': '',                  # 自定义通知 请求地址
     'WEBHOOK_BODY': '',                 # 自定义通知 请求体
     'WEBHOOK_HEADERS': '',              # 自定义通知 请求头
@@ -534,7 +534,7 @@ def telegram_bot(title: str, content: str) -> None:
     print("tg 服务启动")
 
     if push_config.get("TG_API_HOST"):
-        url = f"https://{push_config.get('TG_API_HOST')}/bot{push_config.get('TG_BOT_TOKEN')}/sendMessage"
+        url = f"{push_config.get('TG_API_HOST')}/bot{push_config.get('TG_BOT_TOKEN')}/sendMessage"
     else:
         url = (
             f"https://api.telegram.org/bot{push_config.get('TG_BOT_TOKEN')}/sendMessage"
@@ -749,8 +749,8 @@ def parse_headers(headers):
 
 
 def parse_body(body, content_type):
-    if not body:
-        return ""
+    if not body or content_type == "text/plain":
+        return body
 
     parsed = {}
     lines = body.split("\n")
@@ -760,7 +760,7 @@ def parse_body(body, content_type):
         if i == -1:
             continue
 
-        key = line[:i].strip().lower()
+        key = line[:i].strip()
         val = line[i + 1 :].strip()
 
         if not key or key in parsed:

@@ -57,7 +57,7 @@ export default class NotificationService {
       try {
         return await notificationModeAction?.call(this);
       } catch (error: any) {
-        return false;
+        throw error;
       }
     }
     return false;
@@ -234,8 +234,8 @@ export default class NotificationService {
       telegramBotUserId,
     } = this.params;
     const authStr = telegramBotProxyAuth ? `${telegramBotProxyAuth}@` : '';
-    const url = `https://${
-      telegramBotApiHost ? telegramBotApiHost : 'api.telegram.org'
+    const url = `${
+      telegramBotApiHost ? telegramBotApiHost : 'https://api.telegram.org'
     }/bot${telegramBotToken}/sendMessage`;
     let agent;
     if (telegramBotProxyHost && telegramBotProxyPort) {
@@ -562,7 +562,7 @@ export default class NotificationService {
         throw new Error(JSON.stringify(info));
       }
     } catch (error: any) {
-      throw new Error(error.response ? error.response.body : error);
+      throw error;
     }
   }
 
@@ -591,7 +591,7 @@ export default class NotificationService {
   }
 
   private async chronocat() {
-    const { chronocatURL, chronocatQQ, chronocatToekn } = this.params;
+    const { chronocatURL, chronocatQQ, chronocatToken } = this.params;
     try {
       const user_ids = chronocatQQ
         .match(/user_id=(\d+)/g)
@@ -603,7 +603,7 @@ export default class NotificationService {
       const url = `${chronocatURL}/api/message/send`;
       const headers = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${chronocatToekn}`,
+        Authorization: `Bearer ${chronocatToken}`,
       };
 
       for (const [chat_type, ids] of [
@@ -634,7 +634,7 @@ export default class NotificationService {
             json: data,
             headers,
           });
-          if (res.body === 'success') {
+          if (res.statusCode === 200) {
             return true;
           } else {
             throw new Error(res.body);
@@ -660,9 +660,11 @@ export default class NotificationService {
       webhookUrl,
       webhookBody,
     );
+
     if (!formatUrl && !formatBody) {
-      return false;
+      throw new Error('Url 或者 Body 中必须包含 $title');
     }
+
     const headers = parseHeaders(webhookHeaders);
     const body = parseBody(formatBody, webhookContentType);
     const bodyParam = this.formatBody(webhookContentType, body);
@@ -693,6 +695,7 @@ export default class NotificationService {
       case 'multipart/form-data':
         return { form: body };
       case 'application/x-www-form-urlencoded':
+      case 'text/plain':
         return { body };
     }
     return {};

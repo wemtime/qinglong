@@ -141,7 +141,7 @@
   "服务启动超时": "Service startup timeout",
   "请先按如下方式修复：": "Please fix it as follows:",
   "1. 宿主机执行 docker run --rm -v\n                  /var/run/docker.sock:/var/run/docker.sock\n                  containrrr/watchtower -cR <容器名>": "1. Execute 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower -cR <container_name>' on the host machine",
-  "2. 容器内执行 ql -l check、ql -l update": "2. Execute 'ql -l check' and 'ql -l update' inside the container",
+  "2. 容器内执行 ql check、ql update": "2. Execute 'ql check' and 'ql update' inside the container",
   "3. 如果无法解决，容器内执行 pm2 logs，拷贝执行结果": "3. If the problem persists, execute 'pm2 logs' inside the container and copy the results",
   "提交 issue": "Submit an issue",
   "启动中，请稍后...": "Starting, please wait...",
@@ -375,7 +375,7 @@
   "微信扫码登录后一对一推送或一对多推送下面的token(您的Token)，不提供PUSH_PLUS_USER则默认为一对一推送，参考 https://www.pushplus.plus/": "After WeChat scan login, one-to-one or one-to-many push using the provided token (your Token). If PUSH_PLUS_USER is not provided, it defaults to one-to-one push. See reference at https://www.pushplus.plus/",
   "一对多推送的“群组编码”（一对多推送下面->您的群组(如无则创建)->群组编码，如果您是创建群组人。也需点击“查看二维码”扫描绑定，否则不能接受群组消息推送）": "The 'group code' for one-to-many push (one-to-many push -> your group (if none, create one) -> group code). If you are the creator of the group, you need to click 'View QR code' to scan and bind, otherwise, you won't receive group messages.",
   "飞书群组机器人：https://www.feishu.cn/hc/zh-CN/articles/360024984973": "Feishu group bot: https://www.feishu.cn/hc/zh-CN/articles/360024984973",
-  "邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://nodemailer.com/smtp/well-known/": "Email service name, e.g., 126, 163, Gmail, QQ, etc. Supported list: https://nodemailer.com/smtp/well-known/",
+  "邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://github.com/nodemailer/nodemailer/blob/master/lib/well-known/services.json": "Email service name, e.g., 126, 163, Gmail, QQ, etc. Supported list: https://github.com/nodemailer/nodemailer/blob/master/lib/well-known/services.json",
   "邮箱地址": "Email Address",
   "邮箱SMTP授权码": "Email SMTP Authorization Code",
   "PushMe的Key，https://push.i-i.me/": "PushMe key, https://push.i-i.me/",
@@ -466,5 +466,14 @@
   "个人:user_id=个人QQ 群则填入group_id=QQ群 多个用英文;隔开同时支持个人和群 如：user_id=xxx;group_id=xxxx;group_id=xxxxx": "Individuals: user_id=individual QQ Groups fill in group_id=QQ Groups more than one with English; separated by the same time to support individuals and groups such as: user_id=xxx;group_id=xxxx;group_id=xxxxx",
   "docker安装在持久化config目录下的chronocat.yml文件可找到": "The docker installation can be found in the persistence config directory in the chronocat.yml file",
   "请选择": "Please select",
-  "请输入": "Please input"
+  "请输入": "Please input",
+  "依赖设置": "Dependence Settings",
+  "Node 软件包镜像源": "Node Software Package Mirror Source",
+  "Python 软件包镜像源": "Python Software Package Mirror Source",
+  "Linux 软件包镜像源": "Linux Software Package Mirror Source",
+  "代理与镜像源二选一即可": "Either Proxy or Mirror Source can be chosen",
+  "代理地址, 支持HTTP(S)/SOCK5": "Proxy Address, supports HTTP(S)/SOCK5",
+  "NPM 镜像源": "NPM Mirror Source",
+  "PyPI 镜像源": "PyPI Mirror Source",
+  "alpine linux 镜像源, 例如 mirrors.aliyun.com": "Alpine Linux Mirror Source, e.g. mirrors.aliyun.com"
 }

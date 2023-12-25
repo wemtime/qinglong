@@ -21,20 +21,19 @@ DiskWarn=90
 ## 设置定时任务执行的超时时间，例如1h，后缀"s"代表秒(默认值), "m"代表分, "h"代表小时, "d"代表天
 CommandTimeoutTime=""
 
-## 在运行 task 命令时，随机延迟启动任务的最大延迟时间
-## 默认给javascript任务加随机延迟，如 RandomDelay="300" ，表示任务将在 1-300 秒内随机延迟一个秒数，然后再运行，取消延迟赋值为空
-RandomDelay="300"
+## 在运行 task 命令时，随机延迟启动任务的最大延迟时间，如 RandomDelay="300" ，表示任务将在 1-300 秒内随机延迟一个秒数，然后再运行，取消延迟赋值为空
+RandomDelay=""
 
 ## 需要随机延迟运行任务的文件后缀，直接写后缀名即可，多个后缀用空格分开，例如: js py ts
 ## 默认仅给javascript任务加随机延迟，其它任务按定时规则准点运行。全部任务随机延迟赋值为空
-RandomDelayFileExtensions="js"
+RandomDelayFileExtensions=""
 
 ## 每小时的第几分钟准点运行任务，当在这些时间运行任务时将忽略 RandomDelay 配置，不会被随机延迟
 ## 默认是第0分钟和第30分钟，例如21:00或21:30分的任务将会准点运行。不需要准点运行赋值为空
-RandomDelayIgnoredMinutes="0 30"
+RandomDelayIgnoredMinutes=""
 
-## 如果你自己会写shell脚本，并且希望在每次运行 ql update 命令时，额外运行你的 shell 脚本，请赋值为 "true"，默认为true
-EnableExtraShell="true"
+## 如果你自己会写shell脚本，并且希望在每次容器启动时，额外运行你的 shell 脚本，请赋值为 "true"
+EnableExtraShell=""
 
 ## 是否自动启动bot，默认不启动，设置为true时自动启动，目前需要自行克隆bot仓库所需代码，存到ql/repo目录下，文件夹命名为dockerbot
 AutoStartBot=""
@@ -43,10 +42,10 @@ AutoStartBot=""
 BotRepoUrl=""
 
 ## 安装python依赖时指定pip源
-PipMirror="https://pypi.doubanio.com/simple/"
+PipMirror=""
 
 ## 安装node依赖时指定npm源
-NpmMirror="https://registry.npmmirror.com"
+NpmMirror=""
 
 ## 通知环境变量
 ## 1. Server酱
@@ -178,8 +177,8 @@ export PUSHME_KEY=""
 ## CHRONOCAT_TOKEN 填写在CHRONOCAT文件生成的访问密钥
 ## CHRONOCAT_QQ 个人:user_id=个人QQ 群则填入group_id=QQ群 多个用英文;隔开同时支持个人和群 如：user_id=xxx;group_id=xxxx;group_id=xxxxx
 ## CHRONOCAT相关API https://chronocat.vercel.app/install/docker/official/
-export CHRONOCAT_URL="" 
-export CHRONOCAT_QQ="" #
+export CHRONOCAT_URL=""
+export CHRONOCAT_QQ=""
 export CHRONOCAT_TOKEN=""
 
 ## 其他需要的变量，脚本中需要的变量使用 export 变量名= 声明即可
